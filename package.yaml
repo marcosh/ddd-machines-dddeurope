@@ -1,0 +1,35 @@
+name:                ddd-machines-dddeurope
+version:             0.1.0.0
+author:              Marco Perone
+maintainer:          pasafama@gmail.com
+extra-source-files:
+- README.md
+
+ghc-options:
+  -W
+  -Wall
+  -Werror
+  -fwrite-ide-info
+  -hiedir=.hie
+
+library:
+  source-dirs:       src
+
+dependencies:
+  - base >= 4.7 && < 5
+
+executables:
+  ddd-machines-dddeurope:
+    source-dirs:     app
+    main:            Main.hs
+    dependencies:
+      - ddd-machines-dddeurope
+
+tests:
+  ddd-machines-dddeurope-spec:
+    main:            Spec.hs
+    source-dirs:     spec
+    dependencies:
+      - ddd-machines-dddeurope
+      - hspec
+      - QuickCheck
