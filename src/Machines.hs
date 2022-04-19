@@ -1,5 +1,6 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE TupleSections #-}
 
 module Machines where
 
@@ -28,14 +29,23 @@ type Mealy a b = forall m . Monad m => MealyT m a b
 mealy :: (s -> a -> (b, s)) -> s -> Mealy a b
 mealy = mealyT . (fmap . fmap $ pure)
 
+statefulT :: Functor m => (s -> a -> m s) -> s -> MealyT m a s
+statefulT = mealyT . ((fmap (\a -> (a, a)) .) .)
+
 stateful :: (s -> a -> s) -> s -> Mealy a s
-stateful = mealy . ((.) . (.)) (\a -> (a, a))
+stateful = statefulT . (fmap . fmap $ pure)
+
+mooreT :: Functor m => (s -> m (b, a -> s)) -> s -> MealyT m a b
+mooreT f = mealyT (\s a -> fmap ($ a) <$> f s)
 
 moore :: (s -> (b, a -> s)) -> s -> Mealy a b
-moore f = mealy (\s a -> ($ a) <$> f s)
+moore = mooreT . (\f s -> pure (($) <$> f s))
+
+statelessT :: Functor m => (a -> m b) -> MealyT m a b
+statelessT f = mealyT (\() a -> (, ()) <$> f a) ()
 
 stateless :: (a -> b) -> Mealy a b
-stateless f = mealy (\s a -> (f a, s)) ()
+stateless = statelessT . (pure .)
 
 {- | Iteratively passes a sequence of arguments to a machine accumulating the results in a Semigroup.
 It returns also a new version of the machine with the status updated after all the applications.
