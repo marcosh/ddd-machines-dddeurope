@@ -8,7 +8,6 @@ extra-source-files:
 ghc-options:
   -W
   -Wall
-  -Werror
   -fwrite-ide-info
   -hiedir=.hie
 
@@ -17,6 +16,7 @@ library:
 
 dependencies:
   - base >= 4.7 && < 5
+  - text
 
 executables:
   ddd-machines-dddeurope:
