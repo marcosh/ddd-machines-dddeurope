@@ -54,4 +54,3 @@ spec =
 
       it "does not emits commands on Closed event" $ do
         (fst . runIdentity $ runMealyT (policyMachine doorOpensOnKnock) Closed) `shouldBe` []
-      

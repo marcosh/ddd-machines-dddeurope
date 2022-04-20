@@ -10,7 +10,7 @@ newtype Aggregate command event = Aggregate
 newtype Policy m event command = Policy
   { policyMachine :: MealyT m event [command] }
 
-newtype Projection event readModel = Projection 
+newtype Projection event readModel = Projection
   { projectionMachine :: Mealy event readModel }
 
 data Application m command event readModel = Application
