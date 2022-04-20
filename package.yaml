@@ -16,11 +16,18 @@ library:
 
 dependencies:
   - base >= 4.7 && < 5
+  - QuickCheck
   - text
 
 executables:
-  ddd-machines-dddeurope:
-    source-dirs:     app
+  ddd-machines-dddeurope-door:
+    source-dirs:     door
+    main:            Main.hs
+    dependencies:
+      - ddd-machines-dddeurope
+
+  ddd-machines-dddeurope-risk:
+    source-dirs:     risk
     main:            Main.hs
     dependencies:
       - ddd-machines-dddeurope
