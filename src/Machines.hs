@@ -1,5 +1,5 @@
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TupleSections #-}
 
 module Machines where
@@ -27,25 +27,25 @@ mealyT f = MealyT . (fmap . fmap . fmap $ mealyT f) . f
 type Mealy a b = forall m . Monad m => MealyT m a b
 
 mealy :: (s -> a -> (b, s)) -> s -> Mealy a b
-mealy = mealyT . (fmap . fmap $ pure)
+mealy f s = (mealyT . (fmap . fmap $ pure)) f s
 
 statefulT :: Functor m => (s -> a -> m s) -> s -> MealyT m a s
 statefulT = mealyT . ((fmap (\a -> (a, a)) .) .)
 
 stateful :: (s -> a -> s) -> s -> Mealy a s
-stateful = statefulT . (fmap . fmap $ pure)
+stateful f s = (statefulT . (fmap . fmap $ pure)) f s
 
 mooreT :: Functor m => (s -> m (b, a -> s)) -> s -> MealyT m a b
 mooreT f = mealyT (\s a -> fmap ($ a) <$> f s)
 
 moore :: (s -> (b, a -> s)) -> s -> Mealy a b
-moore = mooreT . (\f s -> pure (($) <$> f s))
+moore f s = (mooreT . (\f' s' -> pure (($) <$> f' s'))) f s
 
 statelessT :: Functor m => (a -> m b) -> MealyT m a b
 statelessT f = mealyT (\() a -> (, ()) <$> f a) ()
 
 stateless :: (a -> b) -> Mealy a b
-stateless = statelessT . (pure .)
+stateless f = (statelessT . (pure .)) f
 
 {- | Iteratively passes a sequence of arguments to a machine accumulating the results in a Semigroup.
 It returns also a new version of the machine with the status updated after all the applications.

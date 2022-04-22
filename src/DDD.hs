@@ -24,7 +24,7 @@ runApplication application commands = fst <$> run machine mempty commands
   where
     machine = compose
       mempty
-      (projectionMachine . projection $ application)
+      ((\p -> projectionMachine p) . projection $ application)
       (case policy application of
-        Nothing      -> aggregateMachine . aggregate $ application
-        Just policy' -> feedback (aggregateMachine . aggregate $ application) (policyMachine policy'))
+        Nothing      -> (\a -> aggregateMachine a) . aggregate $ application
+        Just policy' -> feedback ((\a -> aggregateMachine a) . aggregate $ application) (policyMachine policy'))
