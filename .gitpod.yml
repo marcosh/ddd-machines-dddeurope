@@ -1,0 +1,35 @@
+tasks:
+  - env:
+      # Only the /workspace folder is persistent
+      CABAL_DIR: /workspace/.cabal
+      STACK_ROOT: /workspace/.stack
+      GHCUP_INSTALL_BASE_PREFIX: /workspace
+      # HLS uses XDG specification for cache directories, here we also set
+      # a good default for the other XDG directories
+      XDG_CACHE_HOME: /workspace/.cache
+      XDG_CONFIG_HOME: /workspace/.config
+      XDG_DATA_HOME: /workspace/.local/share
+      XDG_STATE_HOME: /workspace/.local/state
+
+    before: |
+      curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | BOOTSTRAP_HASKELL_NONINTERACTIVE=1 BOOTSTRAP_HASKELL_MINIMAL=1 sh
+      $GHCUP_INSTALL_BASE_PREFIX/.ghcup/bin/ghcup install ghc --set
+      $GHCUP_INSTALL_BASE_PREFIX/.ghcup/bin/ghcup install cabal
+      $GHCUP_INSTALL_BASE_PREFIX/.ghcup/bin/ghcup install stack
+      $GHCUP_INSTALL_BASE_PREFIX/.ghcup/bin/ghcup install hls
+      # Add ghcup binaries to the PATH since VSCode does not see 'source .ghcup/env'
+      pushd /usr/local/bin
+      sudo ln -s /workspace/.ghcup/bin/* /usr/local/bin
+      popd
+      # Fix the Cabal dir since VSCode does not see CABAL_DIR
+      cabal user-config init
+      echo "Symlinking /workspace/.cabal to ~/.cabal"
+      ln -s /workspace/.cabal ~/.cabal
+    init: |
+      stack build
+    command: |
+      stack test
+vscode:
+  extensions:
+    - haskell.haskell
+    - justusadam.language-haskell
