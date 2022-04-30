@@ -1,17 +1,21 @@
 tasks:
-  - env:
+  - before: |
       # Only the /workspace folder is persistent
-      CABAL_DIR: /workspace/.cabal
-      STACK_ROOT: /workspace/.stack
-      GHCUP_INSTALL_BASE_PREFIX: /workspace
       # HLS uses XDG specification for cache directories, here we also set
       # a good default for the other XDG directories
-      XDG_CACHE_HOME: /workspace/.cache
-      XDG_CONFIG_HOME: /workspace/.config
-      XDG_DATA_HOME: /workspace/.local/share
-      XDG_STATE_HOME: /workspace/.local/state
+      cat <<HERE > $HOME/.bashrc.d/210-haskell
+      export CABAL_DIR=/workspace/.cabal
+      export STACK_ROOT=/workspace/.stack
+      export GHCUP_INSTALL_BASE_PREFIX=/workspace
+      export XDG_CACHE_HOME=/workspace/.cache
+      export XDG_CONFIG_HOME=/workspace/.config
+      export XDG_DATA_HOME=/workspace/.local/share
+      export XDG_STATE_HOME=/workspace/.local/state
+      HERE
 
-    before: |
+      # Use the same environment variables in this shell session
+      source $HOME/.bashrc.d/210-haskell
+
       curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | BOOTSTRAP_HASKELL_NONINTERACTIVE=1 BOOTSTRAP_HASKELL_MINIMAL=1 sh
       $GHCUP_INSTALL_BASE_PREFIX/.ghcup/bin/ghcup install ghc --set
       $GHCUP_INSTALL_BASE_PREFIX/.ghcup/bin/ghcup install cabal
