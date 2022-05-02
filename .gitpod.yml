@@ -40,4 +40,4 @@ tasks:
 vscode:
   extensions:
     - haskell.haskell
-    - justusadam.language-haskell@3.3.0
+    - justusadam.language-haskell
