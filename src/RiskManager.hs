@@ -82,6 +82,7 @@ data RiskState
 riskAggregate :: Aggregate RiskCommand RiskEvent
 riskAggregate = Aggregate $ mealy action initialState
   where
+    -- a list is declared with `[_]`, the empty list is `[]`
     action :: RiskState -> RiskCommand -> ([RiskEvent], RiskState)
     action NoData                                 (RegisterUsedData ud)          = (_, _)
     action NoData                                 (ProvideLoanDetails ld)        = (_, _)
@@ -120,6 +121,8 @@ instance Monoid ReceivedData where
 riskProjection :: Projection RiskEvent ReceivedData
 riskProjection = Projection $ stateful action initialState
   where
+    -- you can update a record with the `record {fieldName = value}` syntax
+    -- use the `Just` constructor to say that a `Maybe` actually contains data
     action :: ReceivedData -> RiskEvent -> ReceivedData
     action receivedData (UserDataRegistered ud)        = _
     action receivedData (LoanDetailsProvided ld)       = _
@@ -134,6 +137,8 @@ interactWithCreditBureau _ = generate arbitrary
 riskPolicy :: Policy IO RiskEvent RiskCommand
 riskPolicy = Policy $ statelessT action
   where
+    -- use `_ <$> something` to map over a value `something :: IO a`
+    -- use `pure` to return a value which doesn't to any outside world interaction
     action :: RiskEvent -> IO [RiskCommand]
     action (UserDataRegistered ud)        = _
     action (LoanDetailsProvided ld)       = _
