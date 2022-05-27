@@ -99,4 +99,31 @@ It is actually not stateful, so to define it we just need to specify what to do 
 
 ## Compositionality
 
+### Feedback
+
+Now that we have our three state machines, we need to connect them.
+
+First e connect the aggregate and the policy
+
+```mermaid
+graph LR
+
+command --> aggregate((aggregate))
+aggregate --> event
+event --> policy((policy))
+policy --> command
+```
+
+For any <span style="color: dodgerblue">command</span> we execute the <span style="color: yellow">aggregate</span>, and we get some <span style="color: orange">events</span>. We feed those <span style="color: orange">events</span> one by one to the <span style="color: orchid">policy</span> obtaining other <span style="color: dodgerblue">commands</span> which we feed again into the <span style="color: yellow">aggregate</span>, and we continue with the cycle.
+
+Let's call the result `feedback aggregate policy`.
+
+### Category
+
+Now we need to compose the aggregate and the policy with the projection. This is easier, since we just take the <span style="color: orange">events</span> emitted by `feedback aggregate policy`, and we process them with our `projection` to get our <span style="color: green">read model</span>.
+
+### Strong
+
+Given two state machines with the same input type `a` and two different outputs `b` and `c`, we can create a state machine which consumes inputs of type `a` and produces outputs of type `(b, c)`.
+
 ## Rendering
