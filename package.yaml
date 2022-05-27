@@ -16,6 +16,7 @@ library:
 
 dependencies:
   - base >= 4.7 && < 5
+  - profunctors
   - QuickCheck
   - text
 

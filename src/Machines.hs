@@ -4,9 +4,13 @@
 
 module Machines where
 
+import qualified Control.Arrow as Arrow ((***))
 import qualified Control.Category as Cat (Category (id, (.)))
 import Data.Bifunctor (first)
 import Data.Foldable (foldlM)
+
+-- profunctors
+import Data.Profunctor
 
 newtype MealyT m a b = MealyT
   { runMealyT :: a -> m (b, MealyT m a b) }
@@ -20,6 +24,23 @@ instance Monad m => Cat.Category (MealyT m) where
     (b, m2') <- m2 a
     (c, m1') <- m1 b
     pure (c, m1' Cat.. m2')
+
+instance Functor m => Profunctor (MealyT m) where
+  lmap :: (a -> b) -> MealyT m b c -> MealyT m a c
+  lmap f (MealyT m) = MealyT $ fmap (fmap $ lmap f) <$> m . f
+
+  rmap :: (b -> c) -> MealyT m a b -> MealyT m a c
+  rmap f (MealyT m) = MealyT $ fmap (f Arrow.*** rmap f) <$> m
+
+instance Functor m => Strong (MealyT m) where
+  first' :: MealyT m a b -> MealyT m (a, c) (b, c)
+  first' (MealyT m) = MealyT $ \(a, c) -> ((, c) Arrow.*** first') <$> m a
+
+(***) :: (Cat.Category p, Strong p) => p a b -> p c d -> p (a, c) (b, d)
+(***) pab pcd = second' pcd Cat.. first' pab
+
+(&&&) :: (Cat.Category p, Strong p) => p a b -> p a c -> p a (b, c)
+(&&&) pab pac = (pab *** pac) Cat.. dimap id (\a -> (a, a)) Cat.id
 
 mealyT :: Functor m => (s -> a -> m (b, s)) -> s -> MealyT m a b
 mealyT f = MealyT . (fmap . fmap . fmap $ mealyT f) . f
