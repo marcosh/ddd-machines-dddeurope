@@ -1,4 +1,4 @@
-# What you need to know of Haskell
+# The Haskell you should know
 
 ## declarations and types
 
