@@ -14,14 +14,14 @@ hi = "hi"
 
 ### type variables
 
-Concrete types always start with a capital letter, type variables always start with a lowercase character
+Concrete types always start with a capital letter, type variables (i.e. generics) always start with a lowercase character
 
 ```haskell
 emptyList :: [a]
 emptyList = []
 ```
 
-This means that the empty list `[]` could be interpreted as a list of elements of any possible type `a`.
+This means that the empty list `[]` could be interpreted as a list of elements of any possible type `a`
 
 ## functions
 
@@ -72,7 +72,7 @@ data Bar
   | Bar2 String
 ```
 
-`Bar1` and `Bar2` are two separate constructors for `Bar`, of type `Int -> Bar` and `String -> Bar` respectively.
+`Bar1` and `Bar2` are two separate constructors for `Bar`, of type `Int -> Bar` and `String -> Bar` respectively
 
 ### pattern matching
 
@@ -86,4 +86,16 @@ toString (Bar2 s) = s
 
 ### newtypes
 
-A `newtype` is an optimization for a data declaration with a single constructor containing a single field.
+A `newtype` is an optimization for a data declaration with a single constructor containing a single field. The syntax is the same as a `data` declaration, using the `newtype` keyword instead
+
+## IO
+
+`IO` is the datatype which is used in Haskell to describe interactions with the external world. A value of type `IO a` describes an interaction with the external world which produces a value of type `a`
+
+### map
+
+If you have a value `x :: IO a` and a pure function `f :: a -> b`, it is not possible to apply directly `f` to `x`. Instead, we can map the function `f` over `x` and obtain a value `fmap f x = f <$> x` of type `IO b`
+
+### pure
+
+If we need a value of type `IO a`, and we only have a value `x` of type `a`, we can lift `x` to `IO` using the `pure` function, obtaining a `pure x` value of type `IO a`.
