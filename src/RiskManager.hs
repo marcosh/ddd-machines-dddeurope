@@ -63,7 +63,7 @@ instance Arbitrary CreditBureauData where
   arbitrary = CreditBureauData <$> arbitrary <*> arbitrary
 
 data RiskCommand
-  = RegisterUsedData UserData
+  = RegisterUserData UserData
   | ProvideLoanDetails LoanDetails
   | ProvideCreditBureauData CreditBureauData
 
@@ -84,19 +84,19 @@ riskAggregate = Aggregate $ mealy action initialState
   where
     -- a list is declared with `[_]`, the empty list is `[]`
     action :: RiskState -> RiskCommand -> ([RiskEvent], RiskState)
-    action NoData                                 (RegisterUsedData ud)          = (_, _)
+    action NoData                                 (RegisterUserData ud)          = (_, _)
     action NoData                                 (ProvideLoanDetails ld)        = (_, _)
     action NoData                                 (ProvideCreditBureauData cbd)  = (_, _)
-    action (CollectedUserData ud)                 (RegisterUsedData ud')         = (_, _)
+    action (CollectedUserData ud)                 (RegisterUserData ud')         = (_, _)
     action (CollectedUserData ud)                 (ProvideLoanDetails ld)        = (_, _)
     action (CollectedUserData ud)                 (ProvideCreditBureauData cbd)  = (_, _)
-    action (CollectedLoanDetailsFirst ud ld)      (RegisterUsedData ud')         = (_, _)
+    action (CollectedLoanDetailsFirst ud ld)      (RegisterUserData ud')         = (_, _)
     action (CollectedLoanDetailsFirst ud ld)      (ProvideLoanDetails ld')       = (_, _)
     action (CollectedLoanDetailsFirst ud ld)      (ProvideCreditBureauData cbd)  = (_, _)
-    action (ReceivedCreditBureauDataFirst ud cbd) (RegisterUsedData ud')         = (_, _)
+    action (ReceivedCreditBureauDataFirst ud cbd) (RegisterUserData ud')         = (_, _)
     action (ReceivedCreditBureauDataFirst ud cbd) (ProvideLoanDetails ld)        = (_, _)
     action (ReceivedCreditBureauDataFirst ud cbd) (ProvideCreditBureauData cbd') = (_, _)
-    action (CollectedAllData ud ld cbd)           (RegisterUsedData ud')         = (_, _)
+    action (CollectedAllData ud ld cbd)           (RegisterUserData ud')         = (_, _)
     action (CollectedAllData ud ld cbd)           (ProvideLoanDetails ld')       = (_, _)
     action (CollectedAllData ud ld cbd)           (ProvideCreditBureauData cbd') = (_, _)
 

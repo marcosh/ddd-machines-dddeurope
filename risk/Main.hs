@@ -20,6 +20,6 @@ myLoanDetails = LoanDetails
 
 main :: IO ()
 main = print =<< runApplication riskManagerApplication
-  [ RegisterUsedData myUserData
+  [ RegisterUserData myUserData
   , ProvideLoanDetails myLoanDetails
   ]

@@ -280,7 +280,7 @@ Let's try to run it!
 
 main :: IO ()
 main = print =<< runApplication riskManagerApplication
-  [ RegisterUsedData myUserData
+  [ RegisterUserData myUserData
   , ProvideLoanDetails myLoanDetails
   ]
 ```
