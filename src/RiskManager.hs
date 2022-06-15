@@ -8,7 +8,7 @@ import DDD
 import Machines
 
 -- base
-import Data.Semigroup (Last(Last), Sum(Sum))
+import Data.Semigroup (Last(Last))
 import Data.String (IsString)
 
 -- QuickCheck
@@ -144,15 +144,22 @@ riskPolicy = Policy $ statelessT action
     action (LoanDetailsProvided ld)       = _
     action (CreditBureauDataReceived cbd) = _
 
-userDataUpdatesCounter :: Projection RiskEvent (Sum Int)
+newtype UserDataUpdatesCount = UserDataUpdatesCount Int
+  deriving (Eq, Show)
+  deriving Semigroup via (Last Int)
+
+instance Monoid UserDataUpdatesCount where
+  mempty = UserDataUpdatesCount 0
+
+userDataUpdatesCounter :: Projection RiskEvent UserDataUpdatesCount
 userDataUpdatesCounter = Projection $ stateful action initialState
   where
-    action :: Sum Int -> RiskEvent -> Sum Int
-    action (Sum i) (UserDataRegistered _) = Sum (i + 1)
+    action :: UserDataUpdatesCount -> RiskEvent -> UserDataUpdatesCount
+    action (UserDataUpdatesCount i) (UserDataRegistered _) = UserDataUpdatesCount (i + 1)
     action i _                            = i
 
-    initialState :: Sum Int
-    initialState = Sum 0
+    initialState :: UserDataUpdatesCount
+    initialState = UserDataUpdatesCount 0
 
 riskManagerApplication :: Application IO RiskCommand RiskEvent ReceivedData
 riskManagerApplication = Application riskAggregate (Just riskPolicy) riskProjection
