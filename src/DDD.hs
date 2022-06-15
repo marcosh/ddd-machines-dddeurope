@@ -15,13 +15,6 @@ import Data.Profunctor
 newtype Aggregate command event = Aggregate
   { aggregateMachine :: Mealy command [event] }
 
-instance Cat.Category Aggregate where
-  id :: Aggregate a a
-  id = Aggregate (rmap pure Cat.id)
-
-  (.) :: Aggregate b c -> Aggregate a b -> Aggregate a c
-  (.) (Aggregate mealy1) (Aggregate mealy2) = Aggregate (compose [] mealy1 mealy2)
-
 instance Profunctor Aggregate where
   lmap :: (a -> b) -> Aggregate b c -> Aggregate a c
   lmap f (Aggregate mealy) = Aggregate (lmap f mealy)
