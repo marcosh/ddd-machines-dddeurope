@@ -35,24 +35,24 @@ riskAggregate = Aggregate $ mealy action initialState
   where
     -- a list is declared with `[_]`, the empty list is `[]`
     action :: RiskState -> RiskCommand -> ([RiskEvent], RiskState)
-    action NoData                                 (RegisterUserData ud)            = (_, _)
-    action NoData                                 (ProvideLoanDetails ld)          = (_, _)
-    action NoData                                 (ProvideCreditBureauData cbd)    = (_, _)
-    action (CollectedUserData ud)                 (RegisterUserData newUd)         = (_, _)
-    action (CollectedUserData ud)                 (ProvideLoanDetails ld)          = (_, _)
-    action (CollectedUserData ud)                 (ProvideCreditBureauData cbd)    = (_, _)
-    action (CollectedLoanDetailsFirst ud ld)      (RegisterUserData newUd)         = (_, _)
-    action (CollectedLoanDetailsFirst ud ld)      (ProvideLoanDetails newLd)       = (_, _)
-    action (CollectedLoanDetailsFirst ud ld)      (ProvideCreditBureauData cbd)    = (_, _)
-    action (ReceivedCreditBureauDataFirst ud cbd) (RegisterUserData newUd)         = (_, _)
-    action (ReceivedCreditBureauDataFirst ud cbd) (ProvideLoanDetails ld)          = (_, _)
-    action (ReceivedCreditBureauDataFirst ud cbd) (ProvideCreditBureauData newCbd) = (_, _)
-    action (CollectedAllData ud ld cbd)           (RegisterUserData newUd)         = (_, _)
-    action (CollectedAllData ud ld cbd)           (ProvideLoanDetails newLd)       = (_, _)
-    action (CollectedAllData ud ld cbd)           (ProvideCreditBureauData newCbd) = (_, _)
+    action NoData                                 (RegisterUserData ud)            = ([UserDataRegistered ud], CollectedUserData ud)
+    action NoData                                 (ProvideLoanDetails ld)          = ([], NoData)
+    action NoData                                 (ProvideCreditBureauData cbd)    = ([], NoData)
+    action (CollectedUserData ud)                 (RegisterUserData newUd)         = ([UserDataRegistered newUd], CollectedUserData newUd)
+    action (CollectedUserData ud)                 (ProvideLoanDetails ld)          = ([LoanDetailsProvided ld], CollectedLoanDetailsFirst ud ld)
+    action (CollectedUserData ud)                 (ProvideCreditBureauData cbd)    = ([CreditBureauDataReceived cbd], ReceivedCreditBureauDataFirst ud cbd)
+    action (CollectedLoanDetailsFirst ud ld)      (RegisterUserData newUd)         = ([UserDataRegistered newUd], CollectedLoanDetailsFirst newUd ld)
+    action (CollectedLoanDetailsFirst ud ld)      (ProvideLoanDetails newLd)       = ([LoanDetailsProvided newLd], CollectedLoanDetailsFirst ud newLd)
+    action (CollectedLoanDetailsFirst ud ld)      (ProvideCreditBureauData cbd)    = ([CreditBureauDataReceived cbd], CollectedAllData ud ld cbd)
+    action (ReceivedCreditBureauDataFirst ud cbd) (RegisterUserData newUd)         = ([UserDataRegistered newUd], ReceivedCreditBureauDataFirst newUd cbd)
+    action (ReceivedCreditBureauDataFirst ud cbd) (ProvideLoanDetails ld)          = ([LoanDetailsProvided ld], CollectedAllData ud ld cbd)
+    action (ReceivedCreditBureauDataFirst ud cbd) (ProvideCreditBureauData newCbd) = ([CreditBureauDataReceived newCbd], ReceivedCreditBureauDataFirst ud newCbd)
+    action (CollectedAllData ud ld cbd)           (RegisterUserData newUd)         = ([UserDataRegistered newUd], CollectedAllData newUd ld cbd)
+    action (CollectedAllData ud ld cbd)           (ProvideLoanDetails newLd)       = ([LoanDetailsProvided newLd], CollectedAllData ud newLd cbd)
+    action (CollectedAllData ud ld cbd)           (ProvideCreditBureauData newCbd) = ([CreditBureauDataReceived newCbd], CollectedAllData ud ld newCbd)
 
     initialState :: RiskState
-    initialState = _
+    initialState = NoData
 
 data ReceivedData = ReceivedData
   { userData         :: Maybe UserData
@@ -75,12 +75,12 @@ riskProjection = Projection $ stateful action initialState
     -- you can update a record with the `record {fieldName = value}` syntax
     -- use the `Just` constructor to say that a `Maybe` actually contains data
     action :: ReceivedData -> RiskEvent -> ReceivedData
-    action receivedData (UserDataRegistered ud)        = _
-    action receivedData (LoanDetailsProvided ld)       = _
-    action receivedData (CreditBureauDataReceived cbd) = _
+    action receivedData (UserDataRegistered ud)        = receivedData { userData = Just ud}
+    action receivedData (LoanDetailsProvided ld)       = receivedData { loanDetails = Just ld}
+    action receivedData (CreditBureauDataReceived cbd) = receivedData { creditBureauData = Just cbd}
 
     initialState :: ReceivedData
-    initialState = _
+    initialState = mempty
 
 interactWithCreditBureau :: UserData -> IO CreditBureauData
 interactWithCreditBureau _ = generate arbitrary
@@ -91,9 +91,9 @@ riskPolicy = Policy $ statelessT action
     -- use `_ <$> something` to map over a value `something :: IO a`
     -- use `pure` to return a value which doesn't to any outside world interaction
     action :: RiskEvent -> IO [RiskCommand]
-    action (UserDataRegistered ud)        = _
-    action (LoanDetailsProvided ld)       = _
-    action (CreditBureauDataReceived cbd) = _
+    action (UserDataRegistered ud)        = (\cbd -> [ProvideCreditBureauData cbd]) <$> interactWithCreditBureau ud
+    action (LoanDetailsProvided ld)       = pure []
+    action (CreditBureauDataReceived cbd) = pure []
 
 newtype UserDataUpdatesCount = UserDataUpdatesCount Int
   deriving (Eq, Show)
