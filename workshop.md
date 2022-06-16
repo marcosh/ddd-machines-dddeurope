@@ -27,14 +27,6 @@ https://github.com/marcosh/ddd-machines-dddeurope
 
 ---
 
-To compile the code and run the tests
-
-```bash
-stack test --file-watch
-```
-
----
-
 ## Domain modelling
 
 ![the picture that explains everything](http://marcosh.github.io/img/the-picture-that-explains-everything.png)
@@ -118,14 +110,10 @@ graph TD
 
 ---
 
-### Events
+### Event storming
 
-```haskell
-data RiskEvent
-  = UserDataRegistered UserData
-  | LoanDetailsProvided LoanDetails
-  | CreditBureauDataReceived CreditBureauData
-```
+![Event storming](https://github.com/marcosh/ddd-machines-dddeurope/raw/main/images/event-storming.jpg =600x600)
+
 
 ---
 
@@ -133,7 +121,7 @@ data RiskEvent
 
 ---
 
-## Aggregates, projections and policies could be implemented as state machines
+## <span style="color: yellow">Aggregates</span>, <span style="color: red">projections</span> and <span style="color: orchid">policies</span> could be implemented as state machines
 
 ---
 
@@ -145,7 +133,37 @@ From <span style="color: dodgerblue">commands</span> to <span style="color: oran
 
 ---
 
-Let's implement the aggregate for our domain
+Let's implement the <span style="color: yellow">aggregate</span> for our domain
+
+---
+
+To compile the code and run the tests
+
+```bash
+stack test --file-watch
+```
+
+---
+
+### Events
+
+```haskell
+data RiskEvent
+  = UserDataRegistered UserData
+  | LoanDetailsProvided LoanDetails
+  | CreditBureauDataReceived CreditBureauData
+```
+
+---
+
+### Commands
+
+```haskell
+data RiskCommand
+  = RegisterUserData UserData
+  | ProvideLoanDetails LoanDetails
+  | ProvideCreditBureauData CreditBureauData
+```
 
 ---
 
@@ -173,7 +191,7 @@ initialState :: RiskState
 
 ---
 
-### Projections
+### <span style="color: red">Projections</span>
 
 ![projection-event-read-model](https://github.com/marcosh/ddd-machines-dddeurope/raw/main/images/the-picture-that-explains-everything-projection-event-read-model.png)
 
@@ -193,7 +211,7 @@ data ReceivedData = ReceivedData
 
 ---
 
-The projection is a state machine with `RiskEvent` as input and `ReceivedData` both as output
+The projection is a state machine with <span style="color: #c7254e">`RiskEvent`</span> as input and <span style="color: #c7254e">`ReceivedData`</span> as output
 
 ---
 
@@ -227,9 +245,11 @@ From <span style="color: orange">events</span> to <span style="color: dodgerblue
 
 ---
 
-A policy is a state machine with `RiskEvent` as inputs and `RiskCommand` as outputs.
+A policy is a state machine with <span style="color: #c7254e">`RiskEvent`</span> as inputs and <span style="color: #c7254e">`RiskCommand`</span> as outputs.
 
-Our policy needs to react to the `UserDataRegistered` event and send the data to the credit bureau, using the `interactWithCreditBureau` function
+---
+
+Our policy needs to react to the <span style="color: #c7254e">`UserDataRegistered`</span> event and send the data to the credit bureau, using the <span style="color: #c7254e">`interactWithCreditBureau`</span> function
 
 ---
 
@@ -245,7 +265,7 @@ How do we connect the pieces, now?
 
 ---
 
-## Write model
+## Write side
 
 ```haskell
 feedback
@@ -254,7 +274,7 @@ feedback
   -> Mealy command [event]
 ```
 
-Allows us to combine `Aggregate` and `Policy`
+Allows us to combine <span style="color: yellow">Aggregate</span> and <span style="color: orchid">Policy</span>
 
 ---
 
@@ -269,7 +289,7 @@ instance Category Mealy where
 
 Sequential composition
 
-Allows us to compose `Write` and `Read` sides
+Allows us to compose <span style="color: #c7254e">`Write`</span> and <span style="color: #c7254e">`Read`</span> sides
 
 ---
 
@@ -316,3 +336,11 @@ We can use
 ```
 
 to run the two projections in parallel
+
+---
+
+Time for question and remarks
+
+---
+
+Thank you all!
