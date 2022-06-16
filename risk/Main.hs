@@ -4,6 +4,7 @@ module Main where
 
 import DDD
 import RiskManager
+import RiskManager.Types
 
 myUserData :: UserData
 myUserData = UserData
