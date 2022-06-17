@@ -79,7 +79,7 @@ Reactive logic that takes place after an event
 
 ![projection](https://github.com/marcosh/ddd-machines-dddeurope/raw/main/images/the-picture-that-explains-everything-projection.png)
 
-Creates read models from events
+Aggregate data from events
 
 ---
 
@@ -259,7 +259,7 @@ From <span style="color: orange">events</span> to <span style="color: dodgerblue
 
 ---
 
-A policy is a state machine with <span style="color: #c7254e">`RiskEvent`</span> as inputs and <span style="color: #c7254e">`RiskCommand`</span> as outputs.
+A policy is an effectful state machine with <span style="color: #c7254e">`RiskEvent`</span> as inputs and <span style="color: #c7254e">`RiskCommand`</span> as outputs.
 
 ---
 
