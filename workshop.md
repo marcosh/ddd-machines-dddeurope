@@ -29,6 +29,8 @@ https://github.com/marcosh/ddd-machines-dddeurope
 
 ## Domain modelling
 
+---
+
 ![the picture that explains everything](http://marcosh.github.io/img/the-picture-that-explains-everything.png)
 
 ---
@@ -49,19 +51,11 @@ User intentions/actions/decisions
 
 ---
 
-### <span style="color: lightgreen">Read models</span>
+### <span style="color: lightyellow">Read models</span>
 
 ![read model](https://github.com/marcosh/ddd-machines-dddeurope/raw/main/images/the-picture-that-explains-everything-read-model.png)
 
 Data needed in order to make decisions
-
----
-
-### <span style="color: orchid">Policies</span>
-
-![policy](https://github.com/marcosh/ddd-machines-dddeurope/raw/main/images/the-picture-that-explains-everything-policy.png)
-
-Reactive logic that takes place after an event
 
 ---
 
@@ -73,7 +67,27 @@ Decide what happens on commands
 
 ---
 
+### <span style="color: orchid">Policies</span>
+
+![policy](https://github.com/marcosh/ddd-machines-dddeurope/raw/main/images/the-picture-that-explains-everything-policy.png)
+
+Reactive logic that takes place after an event
+
+---
+
+### <span style="color: lightgreen">Projections</span>
+
+![projection](https://github.com/marcosh/ddd-machines-dddeurope/raw/main/images/the-picture-that-explains-everything-projection.png)
+
+Creates read models from events
+
+---
+
 ## State machines
+
+---
+
+### Mealy machines
 
 ```haskell
 data Mealy state input output = Mealy
@@ -82,17 +96,17 @@ data Mealy state input output = Mealy
   }
 ```
 
----
-
-## State machines
-
 ![Mealy machine](https://upload.wikimedia.org/wikipedia/commons/b/b4/Mealy.png?1653382367553)
 
 ---
 
 ## Our domain
 
-We are creating a risk management system for a lending application
+---
+
+### Risk management
+
+We are building a lending application
 
 We collect information about the user and the loan in order to decide wheter to grant the user the requested loan
 
@@ -121,7 +135,7 @@ graph TD
 
 ---
 
-## <span style="color: yellow">Aggregates</span>, <span style="color: red">projections</span> and <span style="color: orchid">policies</span> could be implemented as state machines
+## <span style="color: yellow">Aggregates</span>, <span style="color: lightgreen">projections</span> and <span style="color: orchid">policies</span> could be implemented as state machines
 
 ---
 
@@ -191,11 +205,11 @@ initialState :: RiskState
 
 ---
 
-### <span style="color: red">Projections</span>
+### <span style="color: lightgreen">Projections</span>
 
 ![projection-event-read-model](https://github.com/marcosh/ddd-machines-dddeurope/raw/main/images/the-picture-that-explains-everything-projection-event-read-model.png)
 
-From <span style="color: orange">events</span> to <span style="color: green">read models</span>
+From <span style="color: orange">events</span> to <span style="color: lightyellow">read models</span>
 
 ---
 
