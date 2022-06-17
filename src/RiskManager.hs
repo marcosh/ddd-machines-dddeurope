@@ -107,7 +107,7 @@ userDataUpdatesCounter = Projection $ stateful action initialState
   where
     action :: UserDataUpdatesCount -> RiskEvent -> UserDataUpdatesCount
     action (UserDataUpdatesCount i) (UserDataRegistered _) = UserDataUpdatesCount (i + 1)
-    action i _                            = i
+    action i _                                             = i
 
     initialState :: UserDataUpdatesCount
     initialState = UserDataUpdatesCount 0
